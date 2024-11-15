@@ -1,0 +1,13 @@
+logging:
+  level:
+    ROOT: INFO
+  pattern:
+    console: "%m%n"
+#      console: "%m%n%xwEx"
+
+spring:
+  application:
+    name: hello-cli
+  shell:
+    interactive:
+      enabled: true

@@ -1,0 +1,54 @@
+plugins {
+    id 'base'
+}
+
+ext {
+    npmCommand = npmPlatformCommand()
+    npmAvailable = isNpmAvailable()
+}
+
+static def npmPlatformCommand() {
+    if (System.getProperty("os.name").toLowerCase().contains("win")) {
+        return "C:\\Program Files\\nodejs\\npm.cmd"
+    }
+    return "npm"
+}
+
+def isNpmAvailable() {
+    try {
+        def process = new ProcessBuilder(project.npmCommand, "--version").start()
+        process.waitFor()
+        return process.exitValue() == 0
+    } catch (Exception e) {
+        return false
+    }
+}
+
+tasks.register('npmInstall', Exec) {
+    workingDir = file('.')
+    commandLine = [npmCommand, "install"]
+    onlyIf { isNpmAvailable() }
+    doLast {
+        if (!isNpmAvailable()) {
+            println "Warning: npm is not available. Skipping npm install."
+        }
+    }
+}
+
+tasks.register('npmBuild', Exec) {
+    workingDir = file('.')
+    commandLine = [npmCommand, "run", "build"]
+    dependsOn npmInstall
+    onlyIf { isNpmAvailable() }
+    doLast {
+        if (!isNpmAvailable()) {
+            println "Warning: npm is not available. Skipping npm build."
+        }
+    }
+}
+
+tasks.register('cleanFrontend', Delete) {
+    delete 'dist'
+}
+
+clean.dependsOn cleanFrontend

@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version "${springBootVersion}"
+}
+
+dependencies {
+    implementation project(':greetingLibrary')
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.register('cleanStatic', Delete) {
+    delete "${projectDir}/src/main/resources/static"
+}
+
+clean.dependsOn cleanStatic
+
+tasks.register('copyFrontendArtifacts', Copy) {
+    dependsOn ':helloUI:clean', ':helloUI:npmBuild'
+    from "${project(':helloUI').projectDir}/dist"
+    into "${projectDir}/src/main/resources/static"
+    onlyIf {
+        file("${project(':helloUI').projectDir}/dist").exists()
+    }
+}
+
+processResources.dependsOn copyFrontendArtifacts
+
+bootJar.dependsOn processResources
+
+springBoot {
+    buildInfo()
+}

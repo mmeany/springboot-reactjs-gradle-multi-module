@@ -1,0 +1,20 @@
+pluginManagement {
+    plugins {
+        id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
+        id 'org.springframework.boot' version "${springBootVersion}"
+        id 'com.palantir.docker' version "${palantirDockerVersion}"
+    }
+}
+
+rootProject.name = 'GreetingAPI'
+include 'Models/greeting-model'
+include 'Libraries/greeting-library'
+include 'APIs/hello-api'
+include 'Tools/hello-cli'
+include 'UI/hello-api-ui'
+
+project(':Models/greeting-model').name = "greetingModel"
+project(':Libraries/greeting-library').name = "greetingLibrary"
+project(':APIs/hello-api').name = "helloApi"
+project(':Tools/hello-cli').name = "helloCli"
+project(':UI/hello-api-ui').name = "helloUI"
