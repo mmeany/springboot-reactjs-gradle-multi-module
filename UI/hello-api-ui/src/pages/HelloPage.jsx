@@ -3,16 +3,19 @@ import {useState} from "react";
 import axios from "axios";
 import {enqueueSnackbar} from "notistack";
 import RawDataDisplay from "../components/RawDataDisplay.jsx";
+import {useSelector} from "react-redux";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const HelloPage = () => {
+  const config = useSelector((state) => state.config);
   const [name, setName] = useState('');
   const [greeting, setGreeting] = useState('');
   const [data, setData] = useState(undefined);
 
   function handleOnClick() {
-    const endpoint = `${API_BASE_URL}/hello/${name}`;
+    const nameToUse = name ? name : config.name;
+    const endpoint = `${API_BASE_URL}/hello/${nameToUse}`;
     axios.get(endpoint)
       .then(response => {
         setData(response.data);

@@ -7,6 +7,8 @@ import AboutPage from './pages/AboutPage';
 import HomePage from './pages/HomePage';
 import SettingsPage from './pages/SettingsPage';
 import HelloPage from "./pages/HelloPage.jsx";
+import {Provider} from "react-redux";
+import store from "./redux/store.js";
 
 function App() {
   return (
@@ -27,4 +29,10 @@ function App() {
   );
 }
 
-export default App;
+const AppWithProvider = () => (
+  <Provider store={store}>
+    <App/>
+  </Provider>
+);
+
+export default AppWithProvider;
