@@ -1,5 +1,5 @@
 [versions]
-springBootVersion = "3.3.2"
+springBootVersion = "3.4.1"
 springShellVersion = "3.4.0"
 springDocVersion = "2.6.0"
 springDependencyManagementVersion = "1.1.6"
