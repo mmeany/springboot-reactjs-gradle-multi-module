@@ -1,20 +1,16 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version "${springBootVersion}"
+    alias(libs.plugins.springDependencyManagementPlugin) apply(true)
+    alias(libs.plugins.springBootPlugin) apply(true)
 }
 
 dependencies {
-    implementation project(':greetingLibrary')
+    api project(':greetingLibrary')
+    api libs.bundles.springBootWeb
 
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
+    annotationProcessor libs.springBootAnnotationProcessor
 
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation libs.springBootStarterTest
 }
 
 tasks.register('cleanStatic', Delete) {
@@ -38,4 +34,14 @@ bootJar.dependsOn processResources
 
 springBoot {
     buildInfo()
+}
+
+bootJar {
+    manifest {
+        attributes("Implementation-Version": project.version)
+    }
+}
+
+tasks.named('sourcesJar') {
+    dependsOn copyFrontendArtifacts
 }

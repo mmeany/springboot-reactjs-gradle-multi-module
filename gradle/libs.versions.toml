@@ -1,0 +1,38 @@
+[versions]
+springBootVersion = "3.3.2"
+springShellVersion = "3.3.1"
+springDocVersion = "2.6.0"
+springDependencyManagementVersion = "1.1.6"
+palantirDockerVersion = "0.36.0"
+lombokVersion = "1.18.36"
+
+[plugins]
+springBootPlugin = { id = "org.springframework.boot", version.ref = "springBootVersion" }
+springDependencyManagementPlugin = { id = "io.spring.dependency-management", version.ref = "springDependencyManagementVersion" }
+palantirDockerPlugin = { id = "com.palantir.docker", version.ref = "palantirDockerVersion" }
+
+[libraries]
+springBootBom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBootVersion" }
+springBootStarterWeb = { module = "org.springframework.boot:spring-boot-starter-web" }
+springBootStarterValidation = { module = 'org.springframework.boot:spring-boot-starter-validation' }
+springBootStarterActuator = { module = 'org.springframework.boot:spring-boot-starter-actuator' }
+springBootStarterTest = { module = "org.springframework.boot:spring-boot-starter-test" }
+springBootAnnotationProcessor = { module = "org.springframework.boot:spring-boot-configuration-processor" }
+springShellDependencies = { module = "org.springframework.shell:spring-shell-dependencies", version.ref = "springShellVersion" }
+springShellStarter = { module = "org.springframework.shell:spring-shell-starter", version.ref = "springShellVersion" }
+springShellStarterTest = { module = "org.springframework.shell:spring-shell-starter-test" }
+springDocOpenApiUi = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springDocVersion" }
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombokVersion" }
+jackson = { module = "com.fasterxml.jackson.core:jackson-databind" }
+jacksonBlackbird = { module = "com.fasterxml.jackson.module:jackson-module-blackbird" }
+
+junitJupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junitJupiterPlatform = { module = "org.junit.platform:junit-platform-launcher" }
+hamcrest = { module = "org.hamcrest:hamcrest" }
+mockito = { module = "org.mockito:mockito-core" }
+mockitoJunitJupiter = { module = "org.mockito:mockito-junit-jupiter" }
+
+[bundles]
+springBootWeb = ["springBootStarterWeb", "springBootStarterActuator", "springBootStarterValidation", "springDocOpenApiUi"]
+junitTest = ["junitJupiter", "hamcrest", "mockito", "mockitoJunitJupiter"]
+jackon = ["jackson", "jacksonBlackbird"]
