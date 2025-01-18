@@ -2,7 +2,7 @@
 springBootVersion = "3.3.2"
 springShellVersion = "3.3.1"
 springDocVersion = "2.6.0"
-springDependencyManagementVersion = "1.1.6"
+springDependencyManagementVersion = "1.1.7"
 palantirDockerVersion = "0.36.0"
 lombokVersion = "1.18.36"
 
