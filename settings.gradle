@@ -1,4 +1,3 @@
-
 rootProject.name = 'GreetingAPI'
 include 'Models/greeting-model'
 include 'Libraries/greeting-library'
