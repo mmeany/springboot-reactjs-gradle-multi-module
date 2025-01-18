@@ -1,29 +1,21 @@
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
-
 plugins {
-    id 'org.springframework.boot' apply false
+    alias(libs.plugins.springDependencyManagementPlugin) apply(true)
+    alias(libs.plugins.springBootPlugin) apply(false)
     id 'base'
-//    id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
 }
 
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'java-test-fixtures'
-    apply plugin: 'io.spring.dependency-management'
+allprojects {
+    apply plugin: 'java-library'
+    //apply plugin: 'java-test-fixtures'
 
     group = 'net.mmeany.play'
     version = '0.0.1-SNAPSHOT'
-
-    dependencyManagement {
-        imports {
-            mavenBom SpringBootPlugin.BOM_COORDINATES
-        }
-    }
 
     java {
         toolchain {
             languageVersion = JavaLanguageVersion.of(17)
         }
+        withSourcesJar()
     }
 
     configurations {
@@ -38,21 +30,17 @@ subprojects {
     }
 
     dependencies {
-        compileOnly "org.projectlombok:lombok"
-        annotationProcessor "org.projectlombok:lombok"
-        annotationProcessor 'org.projectlombok:lombok'
+        implementation(platform(libs.springBootBom))
+        implementation libs.bundles.jackon
 
-        implementation "com.fasterxml.jackson.core:jackson-databind"
-        implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
-        
-        testCompileOnly "org.projectlombok:lombok"
-        testAnnotationProcessor "org.projectlombok:lombok"
+        compileOnly libs.lombok
+        annotationProcessor libs.lombok
 
-        testImplementation "org.junit.jupiter:junit-jupiter"
-        testImplementation "org.hamcrest:hamcrest"
-        testImplementation "org.mockito:mockito-core"
-        testImplementation "org.mockito:mockito-junit-jupiter"
-        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        testCompileOnly libs.lombok
+        testAnnotationProcessor libs.lombok
+
+        testImplementation libs.bundles.junitTest
+        testRuntimeOnly libs.junitJupiterPlatform
 
 //        testFixturesCompileOnly "org.projectlombok:lombok"
 //        testFixturesAnnotationProcessor "org.projectlombok:lombok"
