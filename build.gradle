@@ -38,8 +38,8 @@ allprojects {
     }
 
     s3 {
-        bucket = 'mvm-releases'
-        region = 'eu-west-1'
+        bucket = System.getProperty("aws.bucketName", "mvm-releases")
+        region = System.getProperty("aws.region", "eu-west-1")
     }
 
     dependencies {
