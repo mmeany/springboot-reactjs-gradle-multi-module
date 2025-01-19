@@ -2,14 +2,22 @@ plugins {
     alias(libs.plugins.springDependencyManagementPlugin) apply(true)
     alias(libs.plugins.springBootPlugin) apply(false)
     id 'base'
+    id 'com.mgd.core.gradle.s3' version '2.1.1'
 }
 
 allprojects {
     apply plugin: 'java-library'
     //apply plugin: 'java-test-fixtures'
+    apply plugin: 'com.mgd.core.gradle.s3'
 
     group = 'net.mmeany.play'
-    version = '0.0.1-SNAPSHOT'
+
+    // projVersion can be set using -PprojVersion=x.y.z on the command line or GHA
+    if (project.hasProperty('projVersion')) {
+        project.version = project.projVersion
+    } else {
+        project.version = '0.0.0-SNAPSHOT'
+    }
 
     java {
         toolchain {
@@ -27,6 +35,11 @@ allprojects {
     repositories {
         mavenCentral()
         mavenLocal()
+    }
+
+    s3 {
+        bucket = 'mvm-releases'
+        region = 'eu-west-1'
     }
 
     dependencies {
