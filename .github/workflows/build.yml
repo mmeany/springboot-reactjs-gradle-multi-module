@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - 'release/**'
   pull_request:
     branches:
       - main
@@ -28,16 +29,47 @@ jobs:
         with:
           node-version: '18'
 
-      #      - name: Install npm dependencies
-      #        run: npm install
-      #        working-directory: ./UI/hello-api-ui
-      #
-      #      - name: Build React app
-      #        run: npm run build
-      #        working-directory: ./UI/hello-api-ui
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x ./gradlew
+
+      - name: Get the closest tag
+        id: tag
+        run: |
+          TAG_NAME=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+          echo TAG_NAME=$TAG_NAME >> $GITHUB_ENV
+
+      - name: Build Spring Boot project
+        run: ./gradlew build -Pversion=${{ steps.tag.outputs.TAG_NAME }}
+        env:
+          TAG_NAME: ${{ steps.tag.outputs.TAG_NAME }}
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/heads/release/')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create and push tag
+        id: tag
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/heads/release/}"
+          git tag "v$TAG_NAME"
+          git push origin "$TAG_NAME"
 
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x ./gradlew
 
-      - name: Build Spring Boot project
-        run: ./gradlew build
+      - name: Build Spring Boot project with tag
+        run: |
+          ./gradlew build -Pversion=${{ steps.tag.outputs.TAG_NAME }} \
+          -Daws.accessKeyId=${{ secrets.AWS_ACCESS_KEY_ID }} \
+          -Daws.secretAccessKey=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+          -Daws.region=${{ secrets.AWS_DEFAULT_REGION }} \
+          -Daws.bucketName=${{ secrets.AWS_BUCKET }}
+        env:
+          TAG_NAME: ${{ steps.tag.outputs.TAG_NAME }}

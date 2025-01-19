@@ -13,6 +13,7 @@ dependencies {
     testImplementation libs.springBootStarterTest
 }
 
+// -- Copy frontend artifacts to static folder
 tasks.register('cleanStatic', Delete) {
     delete "${projectDir}/src/main/resources/static"
 }
@@ -31,6 +32,26 @@ tasks.register('copyFrontendArtifacts', Copy) {
 processResources.dependsOn copyFrontendArtifacts
 
 bootJar.dependsOn processResources
+
+// -- Publish project JAR to S3
+tasks.register('publish') {
+    dependsOn 'bootJar'
+    doFirst {
+        println "Publishing"
+    }
+}
+
+tasks.register('defaultSingleFileUpload', S3Upload) {
+    dependsOn 'bootJar'
+    println "Uploading to S3: ${project.name}-${project.version}.jar"
+    key = "${project.name}/${project.name}-${project.version}.jar"
+    file = "${projectDir}/build/libs/${project.name}-${project.version}.jar"
+    overwrite = true
+}
+
+tasks.named('publish') {
+    dependsOn 'defaultSingleFileUpload'
+}
 
 springBoot {
     buildInfo()
