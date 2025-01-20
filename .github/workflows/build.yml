@@ -36,7 +36,8 @@ jobs:
         id: tag
         run: |
           TAG_NAME=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
-          echo TAG_NAME=$TAG_NAME >> $GITHUB_ENV
+        env:
+          TAG_NAME: $TAG_NAME
 
       - name: Build Spring Boot project
         run: ./gradlew clean build -PprojVersion=${{ steps.tag.outputs.TAG_NAME }}-SNAPSHOT
@@ -60,7 +61,8 @@ jobs:
           TAG_NAME="${GITHUB_REF#refs/heads/release/}"
           git tag "v$TAG_NAME"
           git push origin "v$TAG_NAME"
-          echo TAG_NAME=$TAG_NAME >> $GITHUB_ENV
+        env:
+          TAG_NAME: $TAG_NAME
 
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x ./gradlew
