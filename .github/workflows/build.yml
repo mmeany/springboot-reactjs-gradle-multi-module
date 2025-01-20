@@ -39,7 +39,7 @@ jobs:
           echo TAG_NAME=$TAG_NAME >> $GITHUB_ENV
 
       - name: Build Spring Boot project
-        run: ./gradlew clean build -PprojVersion=${{ steps.tag.outputs.TAG_NAME }}
+        run: ./gradlew clean build -PprojVersion=${{ steps.tag.outputs.TAG_NAME }}-SNAPSHOT
         env:
           TAG_NAME: ${{ steps.tag.outputs.TAG_NAME }}
 
