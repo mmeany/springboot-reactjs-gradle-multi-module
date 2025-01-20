@@ -60,6 +60,7 @@ jobs:
           TAG_NAME="${GITHUB_REF#refs/heads/release/}"
           git tag "v$TAG_NAME"
           git push origin "v$TAG_NAME"
+          echo TAG_NAME=$TAG_NAME >> $GITHUB_ENV
 
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x ./gradlew
