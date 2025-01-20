@@ -39,7 +39,7 @@ jobs:
           echo TAG_NAME=$TAG_NAME >> $GITHUB_ENV
 
       - name: Build Spring Boot project
-        run: ./gradlew clean build -Pversion=${{ steps.tag.outputs.TAG_NAME }}
+        run: ./gradlew clean build -PprojVersion=${{ steps.tag.outputs.TAG_NAME }}-SNAPSHOT
         env:
           TAG_NAME: ${{ steps.tag.outputs.TAG_NAME }}
 
@@ -66,7 +66,7 @@ jobs:
 
       - name: Build Spring Boot project with tag
         run: |
-          ./gradlew build publish -Pversion=${{ steps.tag.outputs.TAG_NAME }} \
+          ./gradlew build publish -PprojVersion=${{ steps.tag.outputs.TAG_NAME }} \
           -Daws.accessKeyId=${{ secrets.AWS_ACCESS_KEY_ID }} \
           -Daws.secretAccessKey=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
           -Daws.region=${{ secrets.AWS_DEFAULT_REGION }} \
