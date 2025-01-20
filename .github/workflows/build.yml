@@ -36,13 +36,10 @@ jobs:
         id: tag
         run: |
           TAG_NAME=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
-        env:
-          TAG_NAME: $TAG_NAME
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Build Spring Boot project
-        run: ./gradlew clean build -PprojVersion=${{ steps.tag.outputs.TAG_NAME }}-SNAPSHOT
-        env:
-          TAG_NAME: ${{ steps.tag.outputs.TAG_NAME }}
+        run: ./gradlew clean build -PprojVersion=${{ env.TAG_NAME }}-SNAPSHOT
 
   release:
     runs-on: ubuntu-latest
@@ -61,18 +58,15 @@ jobs:
           TAG_NAME="${GITHUB_REF#refs/heads/release/}"
           git tag "v$TAG_NAME"
           git push origin "v$TAG_NAME"
-        env:
-          TAG_NAME: $TAG_NAME
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x ./gradlew
 
       - name: Build Spring Boot project with tag
         run: |
-          ./gradlew build publish -PprojVersion=${{ steps.tag.outputs.TAG_NAME }} \
+          ./gradlew build publish -PprojVersion=${{ env.TAG_NAME }} \
           -Daws.accessKeyId=${{ secrets.AWS_ACCESS_KEY_ID }} \
           -Daws.secretAccessKey=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
           -Daws.region=${{ secrets.AWS_DEFAULT_REGION }} \
           -Daws.bucketName=${{ secrets.AWS_BUCKET }}
-        env:
-          TAG_NAME: ${{ steps.tag.outputs.TAG_NAME }}
