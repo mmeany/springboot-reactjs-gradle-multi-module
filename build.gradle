@@ -1,3 +1,11 @@
+/*
+    This build has been tailored to work with GitHub Actions. It can be provided with the following properties:
+    -PprojVersion=x.y.z
+    -PecrRepo=NNNNNNNNN.dkr.ecr.eu-west-1.amazonaws.com/sbgmm
+
+    The build will default to 0.0.0-SNAPSHOT and docker.io/library if these properties are not provided.
+ */
+
 plugins {
     alias(libs.plugins.springDependencyManagementPlugin) apply(true)
     alias(libs.plugins.springBootPlugin) apply(false)
@@ -17,6 +25,13 @@ allprojects {
         project.version = project.projVersion
     } else {
         project.version = '0.0.0-SNAPSHOT'
+    }
+
+    if (project.hasProperty('ecrRepo')) {
+        // ecrRepo can be set using -PecrRepo=NNNNNNNNN.dkr.ecr.eu-west-1.amazonaws.com/sbgmm on the command line or GHA
+        project.ext.set('ecrRepo', project.ecrRepo)
+    } else {
+        project.ext.set('ecrRepo', 'docker.io/library')
     }
 
     java {
@@ -60,4 +75,8 @@ allprojects {
 //        testFixturesImplementation "com.fasterxml.jackson.core:jackson-databind"
 //        testFixturesImplementation "com.github.spotbugs:spotbugs-annotations:${spotbugs.toolVersion.get()}"
     }
+}
+
+static def camelToKebab(String camel) {
+    return camel.replaceAll(/([a-z])([A-Z]+)/, '$1-$2').toLowerCase()
 }
