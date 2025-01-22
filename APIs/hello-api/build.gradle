@@ -66,3 +66,16 @@ bootJar {
 tasks.named('sourcesJar') {
     dependsOn copyFrontendArtifacts
 }
+
+bootBuildImage {
+    imageName = "${project.ext.get('ecrRepo')}/${camelToKebab(project.name)}:${project.version}"
+    environment = [
+            'BP_JVM_VERSION': '17.*'
+    ]
+//    publish = true
+//    docker {
+//        publishRegistry {
+//            url = "https://${project.ext.get('ecrRepo')}"
+//        }
+//    }
+}

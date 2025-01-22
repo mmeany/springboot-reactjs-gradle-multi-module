@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - 'release/**'
+      # Comment out the following line to stop GHA from running mvm job on mvm branches
+      #- 'mvm/**'
   pull_request:
     branches:
       - main
@@ -63,10 +65,68 @@ jobs:
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x ./gradlew
 
-      - name: Build Spring Boot project with tag
+      - name: Build Spring Boot project as Docker images
         run: |
-          ./gradlew build publish -PprojVersion=${{ env.TAG_NAME }} \
+          ./gradlew build bootBuildImage -PprojVersion=${{ env.TAG_NAME }} -PecrRepo=${{ secrets.AWS_ECR_BASE }} \
           -Daws.accessKeyId=${{ secrets.AWS_ACCESS_KEY_ID }} \
           -Daws.secretAccessKey=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
           -Daws.region=${{ secrets.AWS_DEFAULT_REGION }} \
           -Daws.bucketName=${{ secrets.AWS_BUCKET }}
+
+      - name: Log in to Amazon ECR
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws ecr get-login-password --region ${{ secrets.AWS_DEFAULT_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR_BASE }}
+
+      - name: Push Docker images to Amazon ECR
+        run: |
+          for IMAGE in $(docker images | grep '${{ secrets.AWS_ECR_BASE }}' | sed -E 's/[[:space:]]+/:/g' | cut -d':' -f'1-2'); do
+            docker push $IMAGE
+          done
+
+  mvm:
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/heads/mvm/')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create and push tag
+        id: tag
+        run: |
+          TAG_NAME=mvm
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x ./gradlew
+
+      # There are options here. Could implement conditional steps that publish to S3 or ECR
+      # To publish to S3 requires the `publish` gradle task to be added to command
+      # To build and publish to ECR requires the `bootBuildImage` gradle task to be added to command
+      # TODO: Check if AWS properties are required for ECR
+
+      - name: Build Spring Boot project with tag
+        run: |
+          ./gradlew build bootBuildImage -PprojVersion=${{ env.TAG_NAME }} -PecrRepo=${{ secrets.AWS_ECR_BASE }} \
+          -Daws.accessKeyId=${{ secrets.AWS_ACCESS_KEY_ID }} \
+          -Daws.secretAccessKey=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+          -Daws.region=${{ secrets.AWS_DEFAULT_REGION }} \
+          -Daws.bucketName=${{ secrets.AWS_BUCKET }}
+
+      - name: Log in to Amazon ECR
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws ecr get-login-password --region ${{ secrets.AWS_DEFAULT_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR_BASE }}
+
+      - name: Push Docker image to Amazon ECR
+        run: |
+          for IMAGE in $(docker images | grep '${{ secrets.AWS_ECR_BASE }}' | sed -E 's/[[:space:]]+/:/g' | cut -d':' -f'1-2'); do
+            echo docker push $IMAGE
+            docker push $IMAGE
+          done

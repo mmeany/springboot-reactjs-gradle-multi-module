@@ -11,3 +11,10 @@ dependencies {
     testImplementation libs.springBootStarterTest
     testImplementation libs.springShellStarterTest
 }
+
+bootBuildImage {
+    imageName = "${project.ext.get('ecrRepo')}/${camelToKebab(project.name)}:${project.version}"
+    environment = [
+            'BP_JVM_VERSION': '17.*'
+    ]
+}
