@@ -93,12 +93,6 @@ jobs:
       - name: Grant execute permission for Gradle wrapper
         run: chmod +x ./gradlew
 
-      - name: Log in to Amazon ECR
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws ecr get-login-password --region ${{ secrets.AWS_DEFAULT_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR_BASE }}
-
       - name: Build Spring Boot project with tag
         run: |
           ./gradlew build bootBuildImage -PprojVersion=${{ env.TAG_NAME }} -PecrRepo=${{ secrets.AWS_ECR_BASE }} \
@@ -106,3 +100,15 @@ jobs:
           -Daws.secretAccessKey=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
           -Daws.region=${{ secrets.AWS_DEFAULT_REGION }} \
           -Daws.bucketName=${{ secrets.AWS_BUCKET }}
+
+      - name: Log in to Amazon ECR
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws ecr get-login-password --region ${{ secrets.AWS_DEFAULT_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR_BASE }}
+
+      - name: Push Docker image to Amazon ECR
+        run: |
+          docker images | grep '${{ secrets.AWS_ECR_BASE }}' | sed -E 's/[[:space:]]+/:/g' | cut -d':' -f'1-2' | docker push
+          # docker tag ${{ secrets.AWS_ECR_BASE }}/spring-boot-reactjs:latest ${{ secrets.AWS_ECR_BASE }}/spring-boot-reactjs:${{ env.TAG_NAME }}
+          # docker push ${{ secrets.AWS_ECR_BASE }}/spring-boot-reactjs:${{ env.TAG_NAME }}
