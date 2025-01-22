@@ -72,10 +72,10 @@ bootBuildImage {
     environment = [
             'BP_JVM_VERSION': '17.*'
     ]
-    publish = true
-    docker {
-        publishRegistry {
-            url = "https://${project.ext.get('ecrRepo')}"
-        }
-    }
+//    publish = true
+//    docker {
+//        publishRegistry {
+//            url = "https://${project.ext.get('ecrRepo')}"
+//        }
+//    }
 }
