@@ -109,6 +109,10 @@ jobs:
 
       - name: Push Docker image to Amazon ECR
         run: |
-          docker images | grep '${{ secrets.AWS_ECR_BASE }}' | sed -E 's/[[:space:]]+/:/g' | cut -d':' -f'1-2' | docker image push
+          for image in $(docker images | grep '${{ secrets.AWS_ECR_BASE }}' | sed -E 's/[[:space:]]+/:/g' | cut -d':' -f'1-2'); do
+            #docker tag $image $image:${{ env.TAG_NAME }}
+            echo docker push $image:${{ env.TAG_NAME }}
+          done
+          # docker images | grep '${{ secrets.AWS_ECR_BASE }}' | sed -E 's/[[:space:]]+/:/g' | cut -d':' -f'1-2' | docker image push
           # docker tag ${{ secrets.AWS_ECR_BASE }}/spring-boot-reactjs:latest ${{ secrets.AWS_ECR_BASE }}/spring-boot-reactjs:${{ env.TAG_NAME }}
           # docker push ${{ secrets.AWS_ECR_BASE }}/spring-boot-reactjs:${{ env.TAG_NAME }}
