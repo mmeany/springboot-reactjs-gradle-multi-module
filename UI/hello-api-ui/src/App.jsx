@@ -10,9 +10,11 @@ import HelloPage from "./pages/HelloPage.jsx";
 import {Provider} from "react-redux";
 import store from "./redux/store.js";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={BASE_URL}>
       <Box sx={{display: 'flex'}}>
         <SnackbarProvider maxSnack={5} anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
           <AppNavBar>
