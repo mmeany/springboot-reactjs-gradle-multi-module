@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.springDependencyManagementPlugin) apply(true)
     alias(libs.plugins.springBootPlugin) apply(false)
     id 'base'
-    id 'com.mgd.core.gradle.s3' version '2.1.1'
+    id 'com.mgd.core.gradle.s3' version '2.2.0'
 }
 
 allprojects {
