@@ -4,7 +4,7 @@ springShellVersion = "3.4.0"
 springDocVersion = "2.8.6"
 springDependencyManagementVersion = "1.1.7"
 palantirDockerVersion = "0.36.0"
-lombokVersion = "1.18.36"
+lombokVersion = "1.18.38"
 
 [plugins]
 springBootPlugin = { id = "org.springframework.boot", version.ref = "springBootVersion" }
