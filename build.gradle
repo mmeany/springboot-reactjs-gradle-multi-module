@@ -59,7 +59,7 @@ allprojects {
 
     dependencies {
         implementation(platform(libs.springBootBom))
-        implementation libs.bundles.jackon
+        implementation libs.bundles.jackson
 
         compileOnly libs.lombok
         annotationProcessor libs.lombok
@@ -67,13 +67,21 @@ allprojects {
         testCompileOnly libs.lombok
         testAnnotationProcessor libs.lombok
 
-        testImplementation libs.bundles.junitTest
-        testRuntimeOnly libs.junitJupiterPlatform
+        testImplementation libs.bundles.junit.test
 
 //        testFixturesCompileOnly "org.projectlombok:lombok"
 //        testFixturesAnnotationProcessor "org.projectlombok:lombok"
 //        testFixturesImplementation "com.fasterxml.jackson.core:jackson-databind"
 //        testFixturesImplementation "com.github.spotbugs:spotbugs-annotations:${spotbugs.toolVersion.get()}"
+    }
+
+    tasks.withType(Test).tap {
+        configureEach {
+            useJUnitPlatform()
+            testLogging {
+                events "passed", "skipped", "failed"
+            }
+        }
     }
 }
 

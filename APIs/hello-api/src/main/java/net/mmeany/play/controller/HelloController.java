@@ -10,8 +10,6 @@ import net.mmeany.greeting.util.GreetingUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api")
 @Slf4j
@@ -44,9 +42,6 @@ public class HelloController {
     }
 
     private ResponseEntity<Greeting> hello(String name) {
-        return ResponseEntity.ok(GreetingUtils.greet(
-            Optional.ofNullable(name)
-                .orElse("World"))
-        );
+        return ResponseEntity.ok(GreetingUtils.greet(name));
     }
 }

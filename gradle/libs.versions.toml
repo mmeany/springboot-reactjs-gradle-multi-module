@@ -1,5 +1,5 @@
 [versions]
-springBootVersion = "3.4.4"
+springBootVersion = "3.5.0"
 springShellVersion = "3.4.0"
 springDocVersion = "2.8.8"
 springDependencyManagementVersion = "1.1.7"
@@ -25,14 +25,15 @@ springDocOpenApiUi = { module = "org.springdoc:springdoc-openapi-starter-webmvc-
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombokVersion" }
 jackson = { module = "com.fasterxml.jackson.core:jackson-databind" }
 jacksonBlackbird = { module = "com.fasterxml.jackson.module:jackson-module-blackbird" }
-
+commonsLang = { module = "org.apache.commons:commons-lang3" }
 junitJupiter = { module = "org.junit.jupiter:junit-jupiter" }
-junitJupiterPlatform = { module = "org.junit.platform:junit-platform-launcher" }
+junit-platform = { module = "org.junit.platform:junit-platform-engine" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 hamcrest = { module = "org.hamcrest:hamcrest" }
 mockito = { module = "org.mockito:mockito-core" }
 mockitoJunitJupiter = { module = "org.mockito:mockito-junit-jupiter" }
 
 [bundles]
 springBootWeb = ["springBootStarterWeb", "springBootStarterActuator", "springBootStarterValidation", "springDocOpenApiUi"]
-junitTest = ["junitJupiter", "hamcrest", "mockito", "mockitoJunitJupiter"]
-jackon = ["jackson", "jacksonBlackbird"]
+junit-test = ["junitJupiter", "junit-platform", "junit-launcher", "hamcrest", "mockito", "mockitoJunitJupiter"]
+jackson = ["jackson", "jacksonBlackbird"]

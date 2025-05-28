@@ -16,7 +16,7 @@ public class Commands {
 
     @Command(description = "Greet someone")
     public String greet(
-        @Option(description = "Name of person to greet", defaultValue = "World") String name) {
+        @Option(description = "Optional name of person to greet") String name) {
         return GreetingUtils.greet(name).greeting();
     }
 }
